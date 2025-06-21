@@ -80,65 +80,63 @@ if [ "$WKYIP" ]; then
    echo -e "\n\033[92mIP: \033[93m $WKYIP\033[0m" | sudo tee /dev/tty1
 fi
 echo -e "\n\033[95mReady for console connection\033[0m\n" | sudo tee /dev/tty1
-while [ true ]
-do
-if [ -f /boot/firmware/PPPwn/config.sh ]; then
- if  grep -Fxq "PPDBG=true" /boot/firmware/PPPwn/config.sh ; then
-   PPDBG=true
+while [ true ]; do
+   if [ -f /boot/firmware/PPPwn/config.sh ]; then
+      if grep -Fxq "PPDBG=true" /boot/firmware/PPPwn/config.sh; then
+         PPDBG=true
+      else
+         PPDBG=false
+      fi
+   fi
+   if [[ $FIRMWAREVERSION == "10.00" ]]; then
+      STAGEVER="10.00"
+   elif [[ $FIRMWAREVERSION == "10.01" ]]; then
+      STAGEVER="10.01"
+   elif [[ $FIRMWAREVERSION == "10.50" ]]; then
+      STAGEVER="10.50"
+   elif [[ $FIRMWAREVERSION == "10.70" ]]; then
+      STAGEVER="10.70"
+   elif [[ $FIRMWAREVERSION == "10.71" ]]; then
+      STAGEVER="10.71"
+   elif [[ $FIRMWAREVERSION == "9.00" ]]; then
+      STAGEVER="9.00"
+   elif [[ $FIRMWAREVERSION == "9.03" ]] ;then
+      STAGEVER="9.03"
+   elif [[ $FIRMWAREVERSION == "9.60" ]]; then
+      STAGEVER="9.60"
    else
-   PPDBG=false
- fi
-fi
-if [[ $FIRMWAREVERSION == "10.00" ]] ;then
-STAGEVER="10.00"
-elif [[ $FIRMWAREVERSION == "10.01" ]] ;then
-STAGEVER="10.01"
-elif [[ $FIRMWAREVERSION == "10.50" ]] ;then
-STAGEVER="10.50"
-elif [[ $FIRMWAREVERSION == "10.70" ]] ;then
-STAGEVER="10.70"
-elif [[ $FIRMWAREVERSION == "10.71" ]] ;then
-STAGEVER="10.71"
-elif [[ $FIRMWAREVERSION == "9.00" ]] ;then
-STAGEVER="9.00"
-elif [[ $FIRMWAREVERSION == "9.03" ]] ;then
-STAGEVER="9.03"
-elif [[ $FIRMWAREVERSION == "9.60" ]] ;then
-STAGEVER="9.60"
-else
-STAGEVER="11.00"
-fi
-while read -r stdo ;
-do
- if [ $PPDBG = true ] ; then
-	echo -e $stdo | sudo tee /dev/tty1 | sudo tee /dev/pts/* | sudo tee -a /boot/firmware/PPPwn/pwn.log
- fi
- if [[ $stdo  == "[+] Done.!" ]] ; then
-	echo -e "\033[32m\nConsole PPPwned! \033[0m\n" | sudo tee /dev/tty1
-	if [ $PPPOECONN = true ] ; then
-		sudo systemctl start pppoe  /dev/null 2>&1 &
-	else
-		if [ $SHUTDOWN = true ] ; then
-			coproc read -t 5 && wait "$!" || true
-			sudo poweroff
-		else
-			if [ $VMUSB = true ] ; then
-				sudo systemctl start pppoe
-			else
-				sudo ip link set $INTERFACE down
-			fi
-        fi
-	fi
-	exit 0
- elif [[ $stdo  == *"Scanning for corrupted object...failed"* ]] ; then
- 	echo -e "\033[31m\nFailed retrying...\033[0m\n" | sudo tee /dev/tty1
- elif [[ $stdo  == *"Unsupported firmware version"* ]] ; then
- 	echo -e "\033[31m\nUnsupported firmware version\033[0m\n" | sudo tee /dev/tty1
- 	exit 1
- elif [[ $stdo  == *"Cannot find interface with name of"* ]] ; then
- 	echo -e "\033[31m\nInterface $INTERFACE not found\033[0m\n" | sudo tee /dev/tty1
- 	exit 1
- fi
-done < <(timeout $TIMEOUT sudo /boot/firmware/PPPwn/$CPPBIN --interface "$INTERFACE" --fw "${STAGEVER//.}" --stage1 "/boot/firmware/PPPwn/stage1_$STAGEVER.bin" --stage2 "/boot/firmware/PPPwn/stage2_$STAGEVER.bin")
-coproc read -t 1 && wait "$!" || true
+      STAGEVER="11.00"
+   fi
+   while read -r stdo; do
+      if [ $PPDBG = true ]; then
+         echo -e $stdo | sudo tee /dev/tty1 | sudo tee /dev/pts/* | sudo tee -a /boot/firmware/PPPwn/pwn.log
+      fi
+      if [[ $stdo == "[+] Done.!" ]] || [[ $stdo == "0" ]]; then
+         echo -e "\033[32m\nConsole PPPwned! \033[0m\n" | sudo tee /dev/tty1
+         if [ $PPPOECONN = true ]; then
+            sudo systemctl start pppoe /dev/null 2>&1 &
+         else
+            if [ $SHUTDOWN = true ]; then
+               coproc read -t 5 && wait "$!" || true
+               sudo poweroff
+            else
+               if [ $VMUSB = true ]; then
+                  sudo systemctl start pppoe
+               else
+                  sudo ip link set $INTERFACE down
+               fi
+            fi
+         fi
+         exit 0
+      elif [[ $stdo == *"Scanning for corrupted object...failed"* ]]; then
+         echo -e "\033[31m\nFailed retrying...\033[0m\n" | sudo tee /dev/tty1
+      elif [[ $stdo == *"Unsupported firmware version"* ]]; then
+         echo -e "\033[31m\nUnsupported firmware version\033[0m\n" | sudo tee /dev/tty1
+         exit 1
+      elif [[ $stdo == *"Cannot find interface with name of"* ]]; then
+         echo -e "\033[31m\nInterface $INTERFACE not found\033[0m\n" | sudo tee /dev/tty1
+         exit 1
+      fi
+   done < <(timeout $TIMEOUT sudo /boot/firmware/PPPwn/$CPPBIN --interface "$INTERFACE" --fw "${STAGEVER//./}" --stage1 "/boot/firmware/PPPwn/stage1_$STAGEVER.bin" --stage2 "/boot/firmware/PPPwn/stage2_$STAGEVER.bin"; echo $?)
+   coproc read -t 1 && wait "$!" || true
 done
