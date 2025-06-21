@@ -1,6 +1,6 @@
 # WKY Pwn
 
-这个脚本是来自于 <a href=https://github.com/TheOfficialFloW/PPPwn>PPPwn</a> and <a href=https://github.com/xfangfang/PPPwn_cpp>PPPwn_cpp</a> 关于针对 Amlogic S805来运行 <a href=https://github.com/GoldHEN/GoldHEN>GoldHen</a> 在PS4 的 11.0, 10.01, 10.00, 9.00版本进行自动化运行<br>
+这个脚本是来自于 <a href=https://github.com/TheOfficialFloW/PPPwn>PPPwn</a> and <a href=https://github.com/xfangfang/PPPwn_cpp>PPPwn_cpp</a> 关于针对 Amlogic S805来运行 <a href=https://github.com/GoldHEN/GoldHEN>GoldHen</a> 在PS4 的 11.0, 10.71, 10.70, 10.50, 10.01, 10.00, 9.60, 9.03, 9.00版本进行自动化运行<br>
 该脚本基本由[PI-Pwn](https://github.com/stooged/PI-Pwn)来修改而成。
 
 ~~PS：为什么淘宝会有399的商家去卖PS4的自动破解工具？？？~~

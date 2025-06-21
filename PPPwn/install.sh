@@ -128,15 +128,15 @@ read -p "$(printf '\r\n\r\n\033[36mWould you like to change the firmware version
 case $fwset in
 [Yy]* ) 
 while true; do
-read -p  "$(printf '\033[33mEnter the firmware version [11.00 | 10.01 | 10.00 | 9.00]: \033[0m')" FWV
+read -p  "$(printf '\033[33mEnter the firmware version [11.00 | 10.71 | 10.70 | 10.50 | 10.01 | 10.00 | 9.60 | 9.03 | 9.00]: \033[0m')" FWV
 case $FWV in
 "" ) 
  echo -e '\033[31mCannot be empty!\033[0m';;
  * )  
 if grep -q '^[0-9.]*$' <<<$FWV ; then 
 
-if [[ ! "$FWV" =~ ^("11.00"|"10.01"|"10.00"|"9.00")$ ]]  ; then
-echo -e '\033[31mThe version must be 11.00 ,10.01 ,10.00 or 9.00\033[0m';
+if [[ ! "$FWV" =~ ^("11.00"|"10.71"|"10.70"|"10.50"|"10.01"|"10.00"|"9.60"|"9.-3"|"9.00")$ ]]  ; then
+echo -e '\033[31mThe version must be 11.00, 10.71, 10.70, 10.50, 10.01, 10.00, 9.60, 9.03 or 9.00\033[0m';
 else 
 break;
 fi
